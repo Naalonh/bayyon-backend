@@ -13,9 +13,10 @@ app.use(
   cors({
     origin: "https://bayyon.netlify.app",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-user-id"],
   }),
 );
+
 
 const PORT = process.env.PORT || 3000;
 
