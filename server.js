@@ -9,9 +9,23 @@ import { Server } from "socket.io";
 import http from "http";
 import cors from "cors";
 const app = express();
+const allowedOrigins = [
+  "https://bayyon.netlify.app",
+  "http://127.0.0.1:5500",
+  "http://localhost:5500",
+];
 app.use(
   cors({
-    origin: "https://bayyon.netlify.app",
+    origin: (origin, callback) => {
+      // Allow server-to-server or tools like curl/postman
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-user-id"],
   }),
