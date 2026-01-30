@@ -7,8 +7,18 @@ import { createClient } from "@supabase/supabase-js";
 import nodemailer from "nodemailer";
 import { Server } from "socket.io";
 import http from "http";
+import cors from "cors";
 const app = express();
-const PORT = 3000;
+app.use(
+  cors({
+    origin: "https://bayyon.netlify.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+
+const PORT = process.env.PORT || 3000;
+
 /* =========================
 HELPER FUNCTIONS 👈 HERE
 ========================= */
@@ -768,5 +778,6 @@ app.post("/api/admin/requests/reject", requireAdmin, async (req, res) => {
    START SERVER
 ========================= */
 server.listen(PORT, () => {
-  console.log(`Server running → http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
+
