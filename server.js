@@ -200,7 +200,6 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(express.static("public"));
 app.use(express.json({ limit: "10mb" }));
 
 /* =========================
@@ -235,7 +234,7 @@ async function requireAdmin(req, res, next) {
    ROUTES
 ========================= */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/register.html"));
+  res.json({ status: "Backend API running" });
 });
 
 app.get("/chat/messages", async (req, res) => {
