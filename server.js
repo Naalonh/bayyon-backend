@@ -4,9 +4,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import bcrypt from "bcryptjs";
 import { createClient } from "@supabase/supabase-js";
-import nodemailer from "nodemailer";
 import { Server } from "socket.io";
 import http from "http";
+import { Resend } from "resend";
 import cors from "cors";
 const app = express();
 const allowedOrigins = [
@@ -32,7 +32,7 @@ app.use(
   }),
 );
 
-
+const resend = new Resend(process.env.RESEND_API_KEY);
 const PORT = process.env.PORT || 3000;
 
 /* =========================
@@ -46,13 +46,6 @@ function generateOTP() {
 ========================= */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const mailer = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -354,23 +347,18 @@ app.post("/forgot-password", async (req, res) => {
 
   // 2. Send OTP email
   try {
-    await mailer.sendMail({
-      from: `"BYN OFFICIAL" <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+      from: "BYN Official <onboarding@resend.dev>",
       to: email,
       subject: "BYN Clan – Password Reset OTP",
       html: `
-        <div style="font-family:Arial,sans-serif;line-height:1.6">
-          <h2>BYN Clan Password Reset</h2>
-          <p>You requested to reset your password.</p>
-          <p><strong>Your OTP code:</strong></p>
-          <h1 style="letter-spacing:4px">${otp}</h1>
-          <p>This code will expire in <b>10 minutes</b>.</p>
-          <hr />
-          <p style="font-size:12px;color:#777">
-            If you didn’t request this, please ignore this email.
-          </p>
-        </div>
-      `,
+    <div style="font-family:Arial,sans-serif;line-height:1.6">
+      <h2>BYN Clan Password Reset</h2>
+      <p>Your OTP code:</p>
+      <h1>${otp}</h1>
+      <p>This code expires in 10 minutes.</p>
+    </div>
+  `,
     });
 
     res.json({ success: true, message: "OTP sent to your email" });
@@ -795,4 +783,3 @@ app.post("/api/admin/requests/reject", requireAdmin, async (req, res) => {
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
