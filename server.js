@@ -348,7 +348,7 @@ app.post("/forgot-password", async (req, res) => {
   // 2. Send OTP email
   try {
     await resend.emails.send({
-      from: "BYN Official <onboarding@resend.dev>",
+      from: "BYN Official <noreply@bayyon.site>",
       to: email,
       subject: "BYN Clan – Password Reset OTP",
       html: `
